@@ -53,7 +53,7 @@ class WaterLevel {
         WaterLevel(gpio_num_t pinSignal, gpio_num_t pinPowerLevelLow, gpio_num_t pinPowerLevelGood, unsigned long measureWaitingTime);
 
         void loopRoutine();
-        void startReading();
+        void startMesure();
         WaterReading getWaterReading();
 };
 

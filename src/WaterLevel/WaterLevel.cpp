@@ -131,7 +131,7 @@ void WaterLevel::loopRoutine() {
     }
 }
 
-void WaterLevel::startReading() {
+void WaterLevel::startMesure() {
     if (isIdle()) {
         goToNextState();
     } else {
