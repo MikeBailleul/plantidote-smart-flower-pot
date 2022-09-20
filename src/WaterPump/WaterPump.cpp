@@ -18,7 +18,7 @@ void WaterPump::initState() {
 }
 
 void WaterPump::pumpRunState() {
-    if(millis() - pumpOperationStartTime < pumpOperationDuration) {
+    if (millis() - pumpOperationStartTime < pumpOperationDuration) {
         digitalWrite(pin, HIGH);
     } else {
         goToNextState();

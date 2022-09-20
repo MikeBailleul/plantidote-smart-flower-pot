@@ -17,14 +17,14 @@ void Battery::initState() {
 }
 
 void Battery::measureState() {
-    if(readingCounter < MEASURE_COUNT && millis() - previousMeasureTime >= measureWaitingTime) {
+    if (readingCounter < MEASURE_COUNT && millis() - previousMeasureTime >= measureWaitingTime) {
         previousMeasureTime = millis();
         float batteryVoltage = getVoltage();
         readingAverage += batteryVoltage;
         readingCounter++;
     }
 
-    if(readingCounter == MEASURE_COUNT) {
+    if (readingCounter == MEASURE_COUNT) {
         goToNextState();
     }
 }

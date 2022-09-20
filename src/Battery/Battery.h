@@ -23,7 +23,7 @@ class Battery {
         unsigned long previousMeasureTime = 0;
         uint8_t readingCounter = 0;
         float readingAverage = 0;
-        uint8_t batteryPercentage;
+        int8_t batteryPercentage = -1;
         
         // ---- state change methods ---- //
         void goToNextState();
