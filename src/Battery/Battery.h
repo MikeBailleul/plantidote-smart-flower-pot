@@ -42,7 +42,7 @@ class Battery {
 
         void loopRoutine();
         void startMeasure();
-        uint8_t getBatteryPercentage();
+        int8_t getBatteryPercentage();
 };
 
 #endif

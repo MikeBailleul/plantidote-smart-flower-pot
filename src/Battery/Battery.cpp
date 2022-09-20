@@ -92,6 +92,6 @@ void Battery::startMeasure() {
     }
 }
 
-uint8_t Battery::getBatteryPercentage() {
+int8_t Battery::getBatteryPercentage() {
     return batteryPercentage;
 }
