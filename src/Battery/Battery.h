@@ -3,30 +3,37 @@
 
 #include <Arduino.h>
 
-enum BatteryState {
-    INITIALIZING = 1,
-    MEASURING = 2,
-    COMPUTING = 3,
-    IDLE = 4
-};
-
 class Battery {
     private:
+        enum BatteryState {
+            INITIALIZING = 1,
+            MEASURING = 2,
+            COMPUTING = 3,
+            IDLE = 4
+        };
+
+        // ---- constructor parameters ---- //
         gpio_num_t pin;
         unsigned long measureWaitingTime = 0;
         float minVoltage;
         float maxVoltage;
         
+        // ---- internal variables ---- //
         uint16_t state;
-        unsigned long previousBatteryLevelMeasureTime = 0;
-        uint8_t batteryReadingCounter = 0;
-        float batteryLevelAverage = 0;
+        unsigned long previousMeasureTime = 0;
+        uint8_t readingCounter = 0;
+        float readingAverage = 0;
         uint8_t batteryPercentage;
         
-        void nextState();
-        void init();
-        void measure();
-        void compute();
+        // ---- state change methods ---- //
+        void goToNextState();
+
+        // ---- state execution methods ---- //
+        void initState();
+        void measureState();
+        void computeState();
+
+        // ---- getters ---- //
         float getVoltage();
         bool isIdle();
 

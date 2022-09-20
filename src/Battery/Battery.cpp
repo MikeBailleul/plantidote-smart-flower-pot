@@ -4,43 +4,43 @@ const uint8_t MEASURE_COUNT = 10; // number of measures to do before averaging
 
 // -------------------------------- private methods -------------------------------- //
 
-void Battery::nextState() {
+void Battery::goToNextState() {
     state = (state + 1) % IDLE;
-    Serial.println("New battery state: " + String(state));
+    Serial.println("Go to next battery state: " + String(state));
 }
 
-void Battery::init() {
-    batteryLevelAverage = 0;
-    batteryReadingCounter = 0;
-    previousBatteryLevelMeasureTime = 0;
-    nextState();
+void Battery::initState() {
+    readingAverage = 0;
+    readingCounter = 0;
+    previousMeasureTime = 0;
+    goToNextState();
 }
 
-void Battery::measure() {
-    if(batteryReadingCounter < MEASURE_COUNT && millis() - previousBatteryLevelMeasureTime >= measureWaitingTime) {
-        previousBatteryLevelMeasureTime = millis();
+void Battery::measureState() {
+    if(readingCounter < MEASURE_COUNT && millis() - previousMeasureTime >= measureWaitingTime) {
+        previousMeasureTime = millis();
         float batteryVoltage = getVoltage();
-        batteryLevelAverage += batteryVoltage;
-        batteryReadingCounter++;
+        readingAverage += batteryVoltage;
+        readingCounter++;
     }
 
-    if(batteryReadingCounter == MEASURE_COUNT) {
-        nextState();
+    if(readingCounter == MEASURE_COUNT) {
+        goToNextState();
     }
 }
 
-void Battery::compute() {
-    batteryLevelAverage = batteryLevelAverage / MEASURE_COUNT;
+void Battery::computeState() {
+    readingAverage = readingAverage / MEASURE_COUNT;
 
     // conversion from voltage to percentage by using a fitting function for the charge-voltage-curve of an LiPo battery
-    batteryPercentage = 2808.3808 * pow(batteryLevelAverage, 4) - 43560.9157 * pow(batteryLevelAverage, 3) + 252848.5888 * pow(batteryLevelAverage, 2) - 650767.4615 * batteryLevelAverage + 626532.9;
-    if (batteryLevelAverage > maxVoltage) {
+    batteryPercentage = 2808.3808 * pow(readingAverage, 4) - 43560.9157 * pow(readingAverage, 3) + 252848.5888 * pow(readingAverage, 2) - 650767.4615 * readingAverage + 626532.9;
+    if (readingAverage > maxVoltage) {
         batteryPercentage = 100;
-    } else if (batteryLevelAverage < minVoltage) {
+    } else if (readingAverage < minVoltage) {
         batteryPercentage = 0;
     }
 
-    nextState();
+    goToNextState();
 }
 
 float Battery::getVoltage() {
@@ -68,15 +68,15 @@ void Battery::loopRoutine() {
         break;
 
     case INITIALIZING:
-        init();
+        initState();
         break;
 
     case MEASURING:
-        measure();
+        measureState();
         break;
 
     case COMPUTING:
-        compute();
+        computeState();
         break;
     
     default:
@@ -86,7 +86,7 @@ void Battery::loopRoutine() {
 
 void Battery::startMeasure() {
     if (isIdle()) {
-        nextState();
+        goToNextState();
     } else {
         Serial.println("Battery not IDLE, already in state: " + String(state));
     }

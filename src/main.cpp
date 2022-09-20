@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Button/Button.h>
 #include <Battery/Battery.h>
+#include <WaterPump/WaterPump.h>
 
 // ------------------------ Pins ---------------------- //
 
@@ -24,7 +25,6 @@ const float BATTERY_MIN_VOLTAGE = 3.5;
 const float BATTERY_MAX_VOLTAGE = 4.2;
 
 // ------------------------ Constants ---------------------- //
-
 const uint16_t MEASURE_WAITING_TIME = 250; // time to wait between measurements
 
 // ------------------------ Cycle controller ---------------------- //
@@ -48,13 +48,12 @@ void waitForNextCycle() {
 
 Button button(PIN_BUTTON);
 Battery battery(PIN_BATTERY_LEVEL, MEASURE_WAITING_TIME, BATTERY_MIN_VOLTAGE, BATTERY_MAX_VOLTAGE);
+WaterPump waterPump(PIN_PUMP_POWER, 5000);
 
 // ------------------------ Methods ---------------------- //
 
 void setup() {
     Serial.begin(115200);
-
-    pinMode(PIN_PUMP_POWER, OUTPUT);
 
     pinMode(PIN_MOISTURE_SIGNAL, INPUT);
     pinMode(PIN_MOISTURE_POWER, OUTPUT);
@@ -72,6 +71,12 @@ void loop() {
         Serial.println("Battery percentage: "+ String(battery.getBatteryPercentage()));
         Serial.println("Pressed");
         battery.startMeasure();
+        waterPump.startPumping();
+    }
+
+    if (button.held(50)) {
+        Serial.println("Held > 50");
+        waterPump.stopPumping();
     }
 
     waitForNextCycle();
