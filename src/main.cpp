@@ -7,22 +7,27 @@
 
 // ------------------------ Pins ---------------------- //
 
-const gpio_num_t PIN_BUTTON = GPIO_NUM_0;
-const gpio_num_t PIN_PUMP_POWER = GPIO_NUM_32;
+const gpio_num_t PIN_BUTTON = GPIO_NUM_4;
+
+const gpio_num_t PIN_PUMP_POWER = GPIO_NUM_17;
 const uint16_t PUMP_DURATION = 5000;
 
 const gpio_num_t PIN_MOISTURE_POWER = GPIO_NUM_19;
-const gpio_num_t PIN_MOISTURE_SIGNAL = GPIO_NUM_33;
+const gpio_num_t PIN_MOISTURE_SIGNAL = GPIO_NUM_34;
 const uint16_t MOISTURE_CALIBRATION_WATER = 821; // hardcoded for now, TODO claibrate directly from app
 const uint16_t MOISTURE_CALIBRATION_AIR = 2535; // hardcoded for now, TODO claibrate directly from app
 
-const gpio_num_t PIN_WATER_SIGNAL = GPIO_NUM_25;
-const gpio_num_t PIN_WATER_POWER_LEVEL_LOW = GPIO_NUM_26;
-const gpio_num_t PIN_WATER_POWER_LEVEL_GOOD = GPIO_NUM_27;
+const gpio_num_t PIN_WATER_SIGNAL = GPIO_NUM_32;
+const gpio_num_t PIN_WATER_POWER_LEVEL_LOW = GPIO_NUM_33;
+const gpio_num_t PIN_WATER_POWER_LEVEL_GOOD = GPIO_NUM_25;
+// const gpio_num_t PIN_WATER_POWER_LEVEL_GOOD = GPIO_NUM_26;
+// const gpio_num_t PIN_WATER_POWER_LEVEL_GOOD = GPIO_NUM_27;
 
 const gpio_num_t PIN_BATTERY_LEVEL = GPIO_NUM_35;
 const float BATTERY_MIN_VOLTAGE = 3.5;
 const float BATTERY_MAX_VOLTAGE = 4.2;
+
+const gpio_num_t PIN_BUILTIN_LED = GPIO_NUM_5;
 
 // ------------------------ Constants ---------------------- //
 
@@ -58,6 +63,7 @@ WaterLevel waterLevel(PIN_WATER_SIGNAL, PIN_WATER_POWER_LEVEL_LOW, PIN_WATER_POW
 void setup() {
     Serial.begin(115200);
 
+    pinMode(PIN_BUILTIN_LED, OUTPUT);
 }
 
 void loop() {
@@ -77,6 +83,9 @@ void loop() {
         battery.startMeasure();
         moisture.startMeasure();
         waterLevel.startMesure();
+
+        digitalWrite(PIN_BUILTIN_LED, !digitalRead(PIN_BUILTIN_LED));
+
         waterPump.startPumping();
     }
 
@@ -84,6 +93,6 @@ void loop() {
         Serial.println("Held > 50");
         waterPump.stopPumping();
     }
-
+    
     waitForNextCycle();
 }
