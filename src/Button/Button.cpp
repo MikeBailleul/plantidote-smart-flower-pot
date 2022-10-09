@@ -4,7 +4,7 @@ const uint8_t DEBOUNCE_DELAY = 10; // ms
 
 Button::Button(gpio_num_t buttonPin) {
     pin = buttonPin;
-    pinMode(pin, INPUT_PULLUP);
+    pinMode(pin, INPUT);
 }
 
 bool Button::pressed() { return state == 1; }
@@ -25,8 +25,7 @@ void Button::loopRoutine() {
     // from the moment we're out of the bouncing phase
     // the actual status of the button can be determined
     if (millis() - lastDebounceTime > DEBOUNCE_DELAY) {
-        // don't forget that the read pin is pulled-up
-        bool pressed = reading == LOW;
+        bool pressed = reading == HIGH;
         if (pressed) {
                 if (state  < 0xfffe) state++;
             else if (state == 0xfffe) state = 2;
