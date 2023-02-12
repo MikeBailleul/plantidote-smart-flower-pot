@@ -7,7 +7,7 @@
 
 // ------------------------ Pins ---------------------- //
 
-const gpio_num_t PIN_BUTTON = GPIO_NUM_4;
+const gpio_num_t PIN_BUTTON = GPIO_NUM_13;
 
 const gpio_num_t PIN_PUMP_POWER = GPIO_NUM_17;
 const uint16_t PUMP_DURATION = 5000;
