@@ -1,0 +1,310 @@
+
+substitutions:
+  esp_name: Flaura 3.0
+  esp_id: flaura3
+
+  water_level_detection_threshold: "0.1" # when voltage reached -> water is present
+
+  soil_moisture_threshold: "50" # when percentage reached -> water plant
+  soil_moisture_calibration_no_water: "2.31" # Volt
+  soil_moisture_calibration_full_water: "0.79" # Volt
+
+  watering_time: 4s
+
+  battery_threshold: "3.4" # battery safety: when this voltage is reached -> go into deep sleep forever
+  battery_min: "3.3" # Volt
+  battery_max: "4.2" # Volt
+
+  sleep_until: "12:00:00"
+
+esphome:
+  name: ${esp_id}
+  on_boot:
+    priority: 900.0
+    then:
+      - delay: 1s
+      - output.turn_off: ${esp_id}_power_moisture
+      - output.turn_off: ${esp_id}_power_pump
+      - output.turn_off: ${esp_id}_power_wl_100
+      - output.turn_off: ${esp_id}_power_wl_75
+      - output.turn_off: ${esp_id}_power_wl_50
+      - output.turn_off: ${esp_id}_power_wl_25
+      - script.execute: run
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+esp32:
+  board: lolin_d32
+  framework:
+    type: arduino
+
+deep_sleep:
+  wakeup_pin: GPIO13
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  password: !secret otc_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${esp_name} Hotspot"
+    password: !secret wifi_ap_password
+
+captive_portal:
+
+switch:
+
+  - platform: gpio
+    pin: GPIO5
+    id: ${esp_id}_switch_builtin_led
+    name: "${esp_name} Built-in LED"
+    icon: "mdi:water-pump"
+    on_turn_on:
+    - delay: 5000ms
+    - switch.turn_off: ${esp_id}_switch_builtin_led
+
+  - platform: template
+    id: ${esp_id}_switch_water_plant
+    name: "${esp_name} Pump water"
+    icon: "mdi:led-on"
+    turn_on_action:
+      then:
+        - script.execute: water_plant
+        - script.wait: water_plant
+        - switch.turn_off: ${esp_id}_switch_water_plant
+    turn_off_action:
+      then:
+        - script.execute: force_stop_water_plant
+
+output:
+  - platform: gpio
+    pin: GPIO19
+    id: ${esp_id}_power_moisture
+
+  - platform: gpio
+    pin: GPIO17
+    id: ${esp_id}_power_pump
+
+  - platform: gpio
+    pin: GPIO27
+    id: ${esp_id}_power_wl_100
+
+  - platform: gpio
+    pin: GPIO26
+    id: ${esp_id}_power_wl_75
+
+  - platform: gpio
+    pin: GPIO25
+    id: ${esp_id}_power_wl_50
+
+  - platform: gpio
+    pin: GPIO33
+    id: ${esp_id}_power_wl_25
+
+sensor:
+  - platform: adc
+    pin: GPIO32
+    id: ${esp_id}_water_level_sensor
+    update_interval: never
+
+  - platform: adc
+    pin: GPIO34
+    id: ${esp_id}_soil_moisture
+    name: "${esp_name} soil moisture"
+    device_class: "MOISTURE"
+    icon: "mdi:sprout"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    attenuation: 11dB
+    update_interval: never
+    filters:
+      - median:
+          window_size: 11
+          send_every: 11
+          send_first_at: 11
+      - calibrate_linear:
+        - ${soil_moisture_calibration_no_water} -> 0.00
+        - ${soil_moisture_calibration_full_water} -> 100.00
+      - lambda: |
+          if (x < 0) return 0; 
+          else if (x > 100) return 100;
+          else return (x);
+
+  - platform: adc
+    pin: GPIO35
+    id: ${esp_id}_battery_voltage
+    name: "${esp_name} battery voltage"
+    device_class: "VOLTAGE"
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    attenuation: 11dB
+    update_interval: never
+    filters:
+      - median:
+          window_size: 11
+          send_every: 11
+          send_first_at: 11
+      - multiply: 2.0
+    on_value_range:
+      below: ${battery_threshold}
+      then:
+        - deep_sleep.enter:
+              sleep_duration: 100000h #forever
+    
+  - platform: template
+    id: ${esp_id}_battery
+    name: "${esp_name} battery"
+    device_class: battery
+    unit_of_measurement: '%'
+    update_interval: never
+    lambda: |-
+      for (int i = 0; i < 11; i++) {
+        id(${esp_id}_battery_voltage).update();
+        delay(200);
+      }
+      float percentage = (id(${esp_id}_battery_voltage).state - $battery_min) / ($battery_max - $battery_min) * 100;
+      if (percentage > 100) {
+        return 100;
+      } else {
+        return percentage;
+      }
+
+  - platform: template
+    id: ${esp_id}_water_level
+    name: "${esp_name} water level"
+    icon: "mdi:water-percent"
+    unit_of_measurement: '%'
+    update_interval: never
+    lambda: |-
+      int values[4] = { 100, 75, 50, 25 };
+      for (int i = 0; i < 4; i++) {
+        auto level = id(${esp_id}_power_wl_100);
+
+        switch (i) {
+          case 0:
+            level = id(${esp_id}_power_wl_100);
+            break;
+          case 1:
+            level = id(${esp_id}_power_wl_75);
+            break;
+          case 2:
+            level = id(${esp_id}_power_wl_50);
+            break;
+          case 3:
+            level = id(${esp_id}_power_wl_25);
+            break;
+        }
+
+        level->turn_on();
+        delay(200);
+        id(${esp_id}_water_level_sensor).update();
+        level->turn_off();
+        if (id(${esp_id}_water_level_sensor).state > ${water_level_detection_threshold}) {
+          return values[i];
+        }
+      }
+
+      return 0;
+
+script:
+  - id: run
+    mode: queued
+    then:
+      - logger.log: "--- Measuring start ---"
+      - script.execute: measure_soil_moisture
+      - script.execute: measure_water_level
+      - script.execute: measure_battery_level
+      - script.wait: measure_soil_moisture
+      - script.wait: measure_water_level
+      - logger.log: "--- Measuring done ---"
+
+      - logger.log: "--- Water is needed? ---"
+      - script.execute: water_plant_if_needed
+      - script.wait: water_plant_if_needed
+
+      - logger.log: "--- Going to sleep soon ---"
+      - output.turn_off: ${esp_id}_power_moisture
+      - output.turn_off: ${esp_id}_power_pump
+      - output.turn_off: ${esp_id}_power_wl_100
+      - output.turn_off: ${esp_id}_power_wl_75
+      - output.turn_off: ${esp_id}_power_wl_50
+      - output.turn_off: ${esp_id}_power_wl_25
+      # - script.execute: enter_sleep
+
+  - id: measure_battery_level
+    then:
+      - component.update: ${esp_id}_battery
+
+  - id: measure_water_level
+    then:
+      - component.update: ${esp_id}_water_level
+
+  - id: measure_soil_moisture
+    then:
+      - output.turn_on: ${esp_id}_power_moisture
+      - lambda: |-
+          for (int i = 0; i < 11; i++) {
+            delay(200);
+            id(${esp_id}_soil_moisture).update();
+          }
+      - output.turn_off: ${esp_id}_power_moisture
+
+  - id: water_plant_if_needed
+    then:
+      - if:
+          condition: # only water plant if soil moisture is too dry
+            lambda: |-
+              return id(${esp_id}_soil_moisture).state > ${soil_moisture_threshold};
+          then:
+            - script.execute: water_plant
+            - script.wait: water_plant
+          else:
+            - logger.log: "--- Moisture level good, no need to water ---"
+
+  - id: water_plant
+    then:
+      - if:
+          condition: # require at least 25% water to water plant
+            lambda: |-
+              return id(${esp_id}_water_level).state > 0;
+          then:
+          - logger.log: "--- Watering plant now ---"
+          - output.turn_on: ${esp_id}_power_pump
+          - delay: ${watering_time}
+          - output.turn_off: ${esp_id}_power_pump
+          else:
+            lambda: |-
+              ESP_LOGE("Error", "Water level is below 25 percent, watering disabled");
+        
+  - id: force_stop_water_plant
+    then:
+      - script.stop: water_plant
+      - output.turn_off: ${esp_id}_power_pump
+      - lambda: |-
+              ESP_LOGW("Warning", "Force stop watering");
+
+  - id: enter_sleep
+    then:
+      - logger.log: "--- ZZZZZzzzzz ---"
+      - deep_sleep.enter: 
+          #until: ${sleep_until}
+          #time_id: ha_time
+          sleep_duration: 100s # for test only
+
+interval: # for test only
+  - interval: 1min
+    then:
+      - script.execute: run
