@@ -1,0 +1,6 @@
+type: statistics-graph
+entities:
+  - sensor.plantidote_soil_moisture
+stat_types:
+  - mean
+title: Moisture sensor

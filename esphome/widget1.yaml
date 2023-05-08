@@ -1,0 +1,28 @@
+type: entities
+entities:
+  - entity: sensor.plantidote_water_level
+    secondary_info: none
+    icon: mdi:water-percent
+  - entity: sensor.plantidote_soil_moisture
+    icon: mdi:sprout
+    secondary_info: none
+  - entity: sensor.plantidote_battery_voltage
+    icon: ''
+    secondary_info: none
+  - entity: sensor.plantidote_battery
+    secondary_info: last-updated
+title: Plantidote
+show_header_toggle: true
+state_color: true
+header:
+  type: picture
+  image: >-
+    https://www.clearwaycommunitysolar.com/wp-content/uploads/2019/03/iStock-956366756-1024x683.jpg
+  tap_action:
+    action: none
+  hold_action:
+    action: none
+footer:
+  type: graph
+  entity: sensor.plantidote_soil_moisture
+  detail: 1

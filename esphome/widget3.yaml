@@ -1,0 +1,9 @@
+type: entities
+entities:
+  - entity: switch.plantidote_pump_water
+    icon: mdi:water-pump
+  - entity: switch.plantidote_built_in_led
+    icon: mdi:led-on
+chart_type: line
+period: hour
+days_to_show: 30
