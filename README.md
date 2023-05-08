@@ -96,9 +96,9 @@ Optional print parts:
 **Print settings**
 You can print in PLA or PETG, both worked fine for me.
 
-The easiest way would be to use the 3mf and print them diretcly with PrusaSlicer, it's already all configured.
+The simplest way is to use the .3mf file and print them directly with PrusaSlicer, it's already all configured.
 
-In case you need to set the settings yourself for the shell, here they are
+In case you need to set the settings yourself for the shells, here they are:
 
 - print on it's head
 - 0.15mm layer with 0.4mm nozzle
@@ -127,27 +127,29 @@ In case you need to set the settings yourself for the shell, here they are
 ###### Making the shell water resistant
 
 **1.** place the moisture sensor in its hole. **IMPORTANT**: if you haven't watched [that video about fixing moisture sensors issues](https://www.youtube.com/watch?v=IGP38bz-K48) yet, now is the time before you proceed with sealing the moisture sensor
-<br />**2.** seal it with the silicone glue, apply it from both side
-<br />**3.** optional: apply silicone in the inner part of the vase as shown by the red circle. I'ts optional because it will depend on your print and filament quality.
+<br />**2.** secure the moisture sensor with the sensor holder
+<br />**3.** seal it with the silicone glue on the inner part
+<br />**4.** seal it with the silicone glue on the bottom part
 
-| 1 | 2 | 2 | 3 |
+| 1 | 2 | 3 | 4 |
 | --- | --- | --- | --- |
-| ![](./images/instructions/sealing/1.jpg) | ![](./images/instructions/sealing/2-1.jpg) | ![](./images/instructions/sealing/2-2.jpg) | ![](./images/instructions/sealing/3.jpg) |
+| ![](./images/instructions/sealing/1.jpg) | ![](./images/instructions/sealing/2.jpg) | ![](./images/instructions/sealing/3.jpg) | ![](./images/instructions/sealing/4.jpg) |
 
-<br />**4.** use the 5 pins cable and insert them into the "water sensor cable tester" as shown on the picture. Then mark the limit with a pen
-<br />**5.** insert those 5 pins cable into the vase until you reach the mark (ground is indicated by a small cut next to the hole)
-<br />**6.** seal it with the silicone glue
+<br />**5.** optional: apply silicone in the inner part of the vase as shown by the red circle. I'ts optional because it will depend on your print and filament quality.
+<br />**6.** use the 5 pins cable and insert them into the "water sensor cable tester" as shown on the picture. Then mark the limit with a pen
+<br />**7.** insert those 5 pins cable into the vase until you reach the mark (ground is indicated by a small cut next to the hole)
+<br />**8.** seal it with the silicone glue
 
-| 4 | 5 | 6 |
-| --- | --- | --- |
-| ![](./images/instructions/sealing/4.jpg) | ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg)
+| 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- |
+| ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg) | ![](./images/instructions/sealing/7.jpg) | ![](./images/instructions/sealing/8.jpg) |
 
-<br />**8.** **wait 48h** for it to dry
-<br />**9.** put a silicone hose between the 2 bottom connector and pour water into the vase to test for leakage
+<br />**9.** **wait 48h** for it to dry
+<br />**10.** put a silicone hose between the 2 bottom connector and pour water into the vase to test for leakage
 
-| 9 |
+| 10 |
 | --- |
-| ![](./images/instructions/sealing/9.jpg) |
+| ![](./images/instructions/sealing/10.jpg) |
 
 ###### Soldering
 It should not be hard to know what goes where since it is very well indicated on the PCB.<br />
