@@ -1,7 +1,7 @@
 
 substitutions:
-  esp_name: Flaura 3.0
-  esp_id: flaura3
+  esp_name: Plantidote
+  esp_id: plantidote
 
   water_level_detection_threshold: "0.1" # when voltage reached -> water is present
 
@@ -49,19 +49,20 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: !secret api_encryption_key
+    key: <encryption_key_here>
 
 ota:
-  password: !secret otc_password
+  password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${esp_name} Hotspot"
-    password: !secret wifi_ap_password
+  
+#  Uncomment and configure this if HA does not detect your device
+#  manual_ip:
+#    static_ip: 192.168.1.222
+#    gateway: 192.168.1.1
+#    subnet: 255.255.255.0
 
 captive_portal:
 
@@ -235,14 +236,18 @@ script:
       - script.execute: water_plant_if_needed
       - script.wait: water_plant_if_needed
 
-      - logger.log: "--- Going to sleep soon ---"
+      - logger.log: "--- Turning off sensors ---"
       - output.turn_off: ${esp_id}_power_moisture
       - output.turn_off: ${esp_id}_power_pump
       - output.turn_off: ${esp_id}_power_wl_100
       - output.turn_off: ${esp_id}_power_wl_75
       - output.turn_off: ${esp_id}_power_wl_50
       - output.turn_off: ${esp_id}_power_wl_25
-      # - script.execute: enter_sleep
+      
+      - logger.log: "--- Going to sleep in 60s ---"
+      - delay: 60s
+      
+      - script.execute: enter_sleep
 
   - id: measure_battery_level
     then:
@@ -257,7 +262,7 @@ script:
       - output.turn_on: ${esp_id}_power_moisture
       - lambda: |-
           for (int i = 0; i < 11; i++) {
-            delay(200);
+            delay(100);
             id(${esp_id}_soil_moisture).update();
           }
       - output.turn_off: ${esp_id}_power_moisture
@@ -300,11 +305,11 @@ script:
     then:
       - logger.log: "--- ZZZZZzzzzz ---"
       - deep_sleep.enter: 
-          #until: ${sleep_until}
-          #time_id: ha_time
-          sleep_duration: 100s # for test only
+          until: ${sleep_until}
+          time_id: ha_time
+          # sleep_duration: 100s # FOR TEST ONLY
 
-interval: # for test only
-  - interval: 1min
-    then:
-      - script.execute: run
+# interval: # FOR TEST ONLY
+#   - interval: 1min
+#     then:
+#       - script.execute: run
