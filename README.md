@@ -16,6 +16,7 @@ Plantidote has 4 design variations for the external shell and can be printed in 
 | Round | Knurl | Spin | V Shape |
 | --- | --- | --- | --- |
 | ![round](./images/vase-round.png) | ![knurl](./images/vase-knurl.png) | ![spin](./images/vase-spin.png) | ![v shape](./images/vase-v-shape.png) |
+
 The vase can be autonomous for months thanks to its 0.5L water tank and its battery. The volume of the flower pot is 0.8L.
 
 
@@ -33,7 +34,7 @@ The vase can be autonomous for months thanks to its 0.5L water tank and its batt
 | Hose - Pump | Silicone | Ø5-Ø3mm | 40mm + 50mm | [AliExpress](https://www.aliexpress.com/item/1005002185082384.html) |
 | T-connector |  | Ø3.2-Ø2.4mm |  | [AliExpress](https://www.aliexpress.com/item/1005004196182380.html) |
 
-PVC hose could work as well, but I advise siliwcone instead because its is softer and will prevent you from breaking the 3D printed hose connectors.
+PVC hose could work as well, but I advise silicone instead because it is softer and will prevent you from breaking the 3D printed hose connectors.
 
 ##### Electronics
 | Quantity | Name | Specs | Note | Link |
@@ -51,29 +52,25 @@ PVC hose could work as well, but I advise siliwcone instead because its is softe
 | 1 | Pin Header Male 3 Pins |  | PCB/Moisture sensor connectors | [AliExpress](https://www.aliexpress.com/item/32758380907.html) |
 | 2 | JST Connector Male/Female 2 Pins | PH Pitch 2.0 | Pump & battery connectors | [AliExpress](https://www.aliexpress.com/item/33009614944.html) 
 | 1 | JST Connector Male/Female 5 Pins + cables  | PH Pitch 2.0 |  | [AliExpress](https://www.aliexpress.com/item/1005001782972538.html) |
-| 3 | M3x6 screw |  | PCB screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
-| 4 | M3x8 screw |  | Pump and battery screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
+
 | 1 | 18650 Li-Ion Battery Cylindrical 2200mAh 3.7V **with JST Connector** | 3.7V, > 2000 mAh, Protection circuitry included | I strongly discourage to buy cheap batteries on AliExpress, buy good batteries = safer and less issues | [AdaFruit](https://www.adafruit.com/product/1781) |
 | 1 | Capacitive Soil Moisture Sensor |  | I strongly encourage you to watch [this video](https://www.youtube.com/watch?v=IGP38bz-K48) to avoid sensor issues | [AliExpress](https://www.aliexpress.com/item/32832538686.html) |
 | 1 | Type-C Adapter USB C to Micro USB |  | Optional | [AliExpress](https://www.aliexpress.com/item/33035034558.html) |
 
 ##### Others
-
 | Quantity | Name | Specs | Note | Link |
 | --- | --- | --- | --- | --- |
+| 4 | M3x6 screw |  | PCB screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
+| 4 | M3x8 screw |  | Pump and battery screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
 | 1 | Silicone rubber glue sealant |  | | [AliExpress](https://www.aliexpress.com/item/1005002041941459.html) |
 
-
-
-
 ##### PCB
-
 The easiest way would be to order the custom PCB via this affiliated link.
 Alternatively, you can use the gerber files in this repo and send them to your manufacturer of choice.
 
 | 2D | Schematics |
 | --- | --- |
-| [![2d](./images/pcb-2d.png)](./images/pcb-2d.png) | [![schematics](./images/pcb-schematics.png)](./images/pcb-schematics.png) |
+| ![2d](./images/pcb-2d.png) | ![schematics](./images/pcb-schematics.png) |
 
 ##### 3D printing
 Choose one of the shell variations. Print time is indicated below.
@@ -142,7 +139,7 @@ In case you need to set the settings yourself for the shell, here they are
 <br />**6.** seal it with the silicone glue
 
 | 4 | 5 | 6 |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | ![](./images/instructions/sealing/4.jpg) | ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg)
 
 <br />**8.** **wait 48h** for it to dry
@@ -222,7 +219,7 @@ It should not be hard to know what goes where since it is very well indicated on
 <br />**10.** put your plant into the inner planter
 <br />**11.** put the planter into the vase
 <br />**12.** remove the sensor protector
-<br />**12.** and VOILÀ
+<br />**13.** and voilà!
 
 | 9 | 10 | 11 | 12 | 13 |
 | --- | --- | --- | --- |  --- |
@@ -234,7 +231,7 @@ It should not be hard to know what goes where since it is very well indicated on
 If you only want to have an autonomous smart plant, you can just upload the ESPHome code to the LolinD32 board by plugging it to your computer. To do that, you need to go to [ESPHome Web](https://web.esphome.io/) and upload the esphome-plantidote.yaml file.
 
 ###### HomeAssistant & ESPHome
-If you want to be able to manually control and monitor your plant, you will need to have a Home Assitant server. For that, [go here](https://www.home-assistant.io/getting-started/) 
+If you want to be able to manually control and monitor your plant, you will need to have a Home Assitant server. For that, [go here](https://www.home-assistant.io/getting-started/).
 
 Once Home Assitant setup, you need to create an ESPHome instance:
 
@@ -324,10 +321,6 @@ This should update the footprint in the PCB editor
 - In output files tab > Gerber > Profile > Add layer > 46 milling
 - Process job
 - Send files in "DrillFiles" and "GerberFiles" to manufacturer
-
-
-
-
 
 
 
