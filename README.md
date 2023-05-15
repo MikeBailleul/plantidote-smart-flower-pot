@@ -65,7 +65,7 @@ PVC hose could work as well, but I advise silicone instead because it is softer 
 | 1 | Silicone rubber glue sealant |  | | [AliExpress](https://www.aliexpress.com/item/1005002041941459.html) |
 
 ##### PCB
-The easiest way would be to order the custom PCB via this affiliated link.
+The easiest way would be to order the custom PCB via this affiliated link. (coming soon)
 Alternatively, you can use the gerber files in this repo and send them to your manufacturer of choice.
 
 | 2D | Schematics |
@@ -75,7 +75,7 @@ Alternatively, you can use the gerber files in this repo and send them to your m
 ##### 3D printing
 Choose one of the shell variations. Print time is indicated below.
 
-| Round: 1j14h | Knurl: 3j5h | Spin: 3j22h | V Shape: 5j |
+| Round: 1j13h | Knurl: 3j5h | Spin: 3j5h | V Shape: 3j3h |
 | --- | --- | --- | --- |
 | ![round](./images/vase-round.png) | ![knurl](./images/vase-knurl.png) | ![spin](./images/vase-spin.png) | ![v shape](./images/vase-v-shape.png) |
 
@@ -139,17 +139,12 @@ In case you need to set the settings yourself for the shells, here they are:
 <br />**6.** use the 5 pins cable and insert them into the "water sensor cable tester" as shown on the picture. Then mark the limit with a pen
 <br />**7.** insert those 5 pins cable into the vase until you reach the mark (ground is indicated by a small cut next to the hole)
 <br />**8.** seal it with the silicone glue
-
-| 5 | 6 | 7 | 8 |
-| --- | --- | --- | --- |
-| ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg) | ![](./images/instructions/sealing/7.jpg) | ![](./images/instructions/sealing/8.jpg) |
-
 <br />**9.** **wait 48h** for it to dry
-<br />**10.** put a silicone hose between the 2 bottom connector and pour water into the vase to test for leakage
+<br />**10.** put a silicone hose between the 2 bottom connectors and pour water into the tank to test for leakage (if needed, fix them with silicone glue)
 
-| 10 |
-| --- |
-| ![](./images/instructions/sealing/10.jpg) |
+| 5 | 6 | 7 |
+| --- | --- | --- |
+| ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg) | ![](./images/instructions/sealing/7.jpg) |
 
 ###### Soldering
 It should not be hard to know what goes where since it is very well indicated on the PCB.<br />
@@ -202,30 +197,28 @@ It should not be hard to know what goes where since it is very well indicated on
 **1.** cut 15mm from the Ø5-Ø3mm hose **twice**
 <br />**2.** connect them to the T-connector
 <br />**3.** cut 365mm of the the Ø4-Ø2mm hose
-<br />**4.** use a sharp tool to create small watering holes
+<br />**4.** connect it with the T-connector
 
 | 1 | 2 | 3 | 4 |
 | --- | --- | --- | --- |
 | ![](./images/instructions/assembling-top/1.jpg) | ![](./images/instructions/assembling-top/2.jpg) | ![](./images/instructions/assembling-top/3.jpg) | ![](./images/instructions/assembling-top/4.jpg) |
 
-<br />**5.** connect it with the T-connector
-<br />**6.** put the ring into the lid and place the lid onto the vase, it should easily fit in and out
-<br />**7.** cut 90mm from the the Ø5-Ø3mm hose
-<br />**8.** connect it to the bottom of the pot and the T-connector
+<br />**5.** put the ring into the lid
+<br />**6.** use a sharp tool to create small watering holes
+<br />**7.** place the lid onto the vase, it should easily fit in and out
+<br />**8.** cut 90mm from the the Ø5-Ø3mm hose and connect it to the bottom of the pot and the T-connector
 
 | 5 | 6 | 7 | 8 |
 | --- | --- | --- | --- |
 | ![](./images/instructions/assembling-top/5.jpg) | ![](./images/instructions/assembling-top/6.jpg) | ![](./images/instructions/assembling-top/7.jpg) | ![](./images/instructions/assembling-top/8.jpg) |
 
-<br />**9.** place the sensor protector on the inner planter (this will protect the roots of the plant when you insert it into the vase
+<br />**9.** place the sensor protector on the inner planter (it will protect the roots of the plant when you insert it into the vase)
 <br />**10.** put your plant into the inner planter
-<br />**11.** put the planter into the vase
-<br />**12.** remove the sensor protector
-<br />**13.** and voilà!
+<br />**11.** put the planter into the vase and remove the sensor protector and voilà!
 
-| 9 | 10 | 11 | 12 | 13 |
-| --- | --- | --- | --- |  --- |
-| ![](./images/instructions/assembling-top/9.jpg) | ![](./images/instructions/assembling-top/10.jpg) | ![](./images/instructions/assembling-top/11.jpg)
+| 9 | 10 | 11 |
+| --- | --- | --- |
+| ![](./images/instructions/assembling-top/9.jpg) | ![](./images/instructions/assembling-top/10.jpg) | ![](./images/instructions/assembling-top/11.jpg) |
 
 ##### Home Assistant & ESPHome instructions
 
