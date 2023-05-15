@@ -51,8 +51,7 @@ PVC hose could work as well, but I advise silicone instead because it is softer 
 | 2 | Pin Header Female 16 Pins |  | PCB/LolinD32 connectors | [AliExpress](https://www.aliexpress.com/item/33004522737.html) |
 | 1 | Pin Header Male 3 Pins |  | PCB/Moisture sensor connectors | [AliExpress](https://www.aliexpress.com/item/32758380907.html) |
 | 2 | JST Connector Male/Female 2 Pins | PH Pitch 2.0 | Pump & battery connectors | [AliExpress](https://www.aliexpress.com/item/33009614944.html) 
-| 1 | JST Connector Male/Female 5 Pins + cables  | PH Pitch 2.0 |  | [AliExpress](https://www.aliexpress.com/item/1005001782972538.html) |
-
+| 1 | JST Connector Male/Female 5 Pins + cables  | PH Pitch 2.0 | Water level sensor connector | [AliExpress](https://www.aliexpress.com/item/1005001782972538.html) |
 | 1 | 18650 Li-Ion Battery Cylindrical 2200mAh 3.7V **with JST Connector** | 3.7V, > 2000 mAh, Protection circuitry included | I strongly discourage to buy cheap batteries on AliExpress, buy good batteries = safer and less issues | [AdaFruit](https://www.adafruit.com/product/1781) |
 | 1 | Capacitive Soil Moisture Sensor |  | I strongly encourage you to watch [this video](https://www.youtube.com/watch?v=IGP38bz-K48) to avoid sensor issues | [AliExpress](https://www.aliexpress.com/item/32832538686.html) |
 | 1 | Type-C Adapter USB C to Micro USB |  | Optional | [AliExpress](https://www.aliexpress.com/item/33035034558.html) |
