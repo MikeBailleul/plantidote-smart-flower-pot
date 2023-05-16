@@ -64,7 +64,7 @@ PVC hose could work as well, but I advise silicone instead because it is softer 
 | 1 | Silicone rubber glue sealant |  | | [AliExpress](https://www.aliexpress.com/item/1005002041941459.html) |
 
 ##### PCB
-The easiest way would be to order the custom PCB via this affiliated link. (coming soon)
+The easiest way would be to order the custom PCB via this [affiliate link](https://www.pcbway.com/project/shareproject/Plantidote_0ff0f20b.html).
 Alternatively, you can use the gerber files in this repo and send them to your manufacturer of choice.
 
 | 2D | Schematics |
