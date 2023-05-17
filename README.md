@@ -91,6 +91,8 @@ Alternatively, you can use the gerber files in this repo and send them to your m
 | ![2d](./images/pcb-2d.png) | ![schematics](./images/pcb-schematics.png) |
 
 ## 3D printing
+
+### Print parts
 Choose one of the shell variations. Print time is indicated below.
 
 | Round: 1j13h | Knurl: 3j5h | Spin: 3j5h | V Shape: 3j3h |
@@ -111,7 +113,7 @@ Optional print parts:
 - water sensor cable tester -> will help you determine the length of the cable needed
 - sensor protector -> will help you protect the roots of the plants when filling the inner planter
 
-**Print settings**
+### Print settings
 You can print in PLA or PETG, both worked fine for me.
 
 The simplest way is to use the .3mf file and print them directly with PrusaSlicer, it's already all configured.
@@ -121,8 +123,8 @@ In case you need to set the settings yourself for the shells, here they are:
 - print on it's head
 - 0.15mm layer with 0.4mm nozzle
 - layers & perimeters
-	- vertical shells > perimeters: 7
-	- horizontal shell > solid layers > top: 15
+	- vertical shells -> perimeters: 7
+	- horizontal shell -> solid layers > top: 15
 	- enable external perimeters first
 	- seam: rear
 - infill
@@ -136,7 +138,7 @@ In case you need to set the settings yourself for the shells, here they are:
 	- bridges: 15mm/s
 	- first layer: 15mm/s
 - custom range 4-13mm
-	- speed > bridge: 8mm/s
+	- speed -> bridge: 8mm/s
 
 ## Build instructions
 
