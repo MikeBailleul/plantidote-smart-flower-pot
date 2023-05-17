@@ -2,7 +2,26 @@
 
 Plantidote, the antidote to never worry about failing your plants again.
 
-## History of the project
+How many times have you found yourself on the brink of dehydration, parched, staring at your glass of water, but too lazy to actually pick it up and sip? Now, imagine that, but you're a plant 🌱. Imagine the thirst. 💦 The despair... 😩
+
+Plantidote will automatically check for moisture level in the planter and will water itself if needed.
+
+# Table of Contents
+- [How to build your own](#how-to-build-your-own)
+  * [BOM](#bom)
+  * [PCB](#pcb)
+  * [3D printing](#3d-printing)
+- [Build instructions](#build-instructions)
+  * [Making the shell water Resistant](#making-the-shell-water-resistant)
+  * [Soldering](#soldering)
+  * [Assembling the bottom part](#assembling-the-bottom-part)
+  * [Assembling the top part](#assembling-the-top-part)
+- [Home Assistant & ESPHome Instructions](#home-assistant-esphome-instructions)
+- [Design choices](#design-choices)
+- [Some Fusion 360 PCB tips](#some-fusion-360-pcb-tips)
+
+
+# History of the project
 Plantidote is based on [this awesome idea](https://github.com/FlauraPlantPot/Flaura) by Martin McMaker.
 Unfortunately, it was working only with Blynk and the pot was difficult to make waterproof.
 
@@ -21,11 +40,11 @@ The vase can be autonomous for months thanks to its 0.5L water tank and its batt
 
 
 
-## How to build your own
+# How to build your own
 
-### BOM
+## BOM
 
-##### Hoses
+#### Hoses
 | Name | Type | Diameter | Length | Link |
 | --- | --- | --- | --- | --- |
 | Hose - Watering ring  | PTFE | Ø4-Ø2mm | 365mm | [AliExpress](https://www.aliexpress.com/item/1005001976975889.html) |
@@ -36,7 +55,7 @@ The vase can be autonomous for months thanks to its 0.5L water tank and its batt
 
 PVC hose could work as well, but I advise silicone instead because it is softer and will prevent you from breaking the 3D printed hose connectors.
 
-##### Electronics
+#### Electronics
 | Quantity | Name | Specs | Note | Link |
 | --- | --- | --- | --- | --- |
 | 1 | Lolin D32 |  |  | [AliExpress](https://www.aliexpress.com/item/32808551116.html) |
@@ -56,14 +75,14 @@ PVC hose could work as well, but I advise silicone instead because it is softer 
 | 1 | Capacitive Soil Moisture Sensor |  | I strongly encourage you to watch [this video](https://www.youtube.com/watch?v=IGP38bz-K48) to avoid sensor issues | [AliExpress](https://www.aliexpress.com/item/32832538686.html) |
 | 1 | Type-C Adapter USB C to Micro USB |  | Optional | [AliExpress](https://www.aliexpress.com/item/33035034558.html) |
 
-##### Others
+#### Others
 | Quantity | Name | Specs | Note | Link |
 | --- | --- | --- | --- | --- |
 | 4 | M3x6 screw |  | PCB screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
 | 4 | M3x8 screw |  | Pump and battery screws | [AliExpress](https://www.aliexpress.com/item/1005005469135111.html) |
 | 1 | Silicone rubber glue sealant |  | | [AliExpress](https://www.aliexpress.com/item/1005002041941459.html) |
 
-##### PCB
+## PCB
 The easiest way would be to order the custom PCB via this [affiliate link](https://www.pcbway.com/project/shareproject/Plantidote_0ff0f20b.html).
 Alternatively, you can use the gerber files in this repo and send them to your manufacturer of choice.
 
@@ -71,7 +90,7 @@ Alternatively, you can use the gerber files in this repo and send them to your m
 | --- | --- |
 | ![2d](./images/pcb-2d.png) | ![schematics](./images/pcb-schematics.png) |
 
-##### 3D printing
+## 3D printing
 Choose one of the shell variations. Print time is indicated below.
 
 | Round: 1j13h | Knurl: 3j5h | Spin: 3j5h | V Shape: 3j3h |
@@ -119,11 +138,9 @@ In case you need to set the settings yourself for the shells, here they are:
 - custom range 4-13mm
 	- speed > bridge: 8mm/s
 
-###  Instructions 
+## Build instructions
 
-##### Build instructions
-
-###### Making the shell water resistant
+### Making the shell water resistant
 
 **1.** place the moisture sensor in its hole. **IMPORTANT**: if you haven't watched [that video about fixing moisture sensors issues](https://www.youtube.com/watch?v=IGP38bz-K48) yet, now is the time before you proceed with sealing the moisture sensor
 <br />**2.** secure the moisture sensor with the sensor holder
@@ -145,7 +162,7 @@ In case you need to set the settings yourself for the shells, here they are:
 | --- | --- | --- |
 | ![](./images/instructions/sealing/5.jpg) | ![](./images/instructions/sealing/6.jpg) | ![](./images/instructions/sealing/7.jpg) |
 
-###### Soldering
+### Soldering
 It should not be hard to know what goes where since it is very well indicated on the PCB.<br />
 <br />**1.** everything has to be soldered from the back of the PCB
 <br />**2.** solder the 16 pins male to the PCB
@@ -172,7 +189,7 @@ It should not be hard to know what goes where since it is very well indicated on
 | --- | --- | --- |
 | ![](./images/instructions/soldering/7.jpg) | ![](./images/instructions/soldering/8.jpg) | ![](./images/instructions/soldering/9.jpg) |
 
-###### Assembling the bottom part 
+### Assembling the bottom part 
 
 **1.** install the battery + holder using two M3x8 screws
 <br />**2.** cut 40mm and 50mm from the Ø5-Ø3mm hose, connect them to the pump and the hose connectors. If you bought the exact same pump as I did, the bigger connector on the pump is pushing out water, connect this one to the inner connector.
@@ -190,8 +207,7 @@ It should not be hard to know what goes where since it is very well indicated on
 | --- | --- |
 | ![](./images/instructions/assermbling-bottom/5.jpg) | ![](./images/instructions/assermbling-bottom/6.jpg) |
 
-
-###### Assembling the top part
+### Assembling the top part
 
 **1.** cut 15mm from the Ø5-Ø3mm hose **twice**
 <br />**2.** connect them to the T-connector
@@ -219,12 +235,12 @@ It should not be hard to know what goes where since it is very well indicated on
 | --- | --- | --- |
 | ![](./images/instructions/assembling-top/9.jpg) | ![](./images/instructions/assembling-top/10.jpg) | ![](./images/instructions/assembling-top/11.jpg) |
 
-##### Home Assistant & ESPHome instructions
+## Home Assistant & ESPHome instructions
 
-###### ESPHome only
+### ESPHome only
 If you only want to have an autonomous smart plant, you can just upload the ESPHome code to the LolinD32 board by plugging it to your computer. To do that, you need to go to [ESPHome Web](https://web.esphome.io/) and upload the esphome-plantidote.yaml file.
 
-###### HomeAssistant & ESPHome
+### HomeAssistant & ESPHome
 If you want to be able to manually control and monitor your plant, you will need to have a Home Assitant server. For that, [go here](https://www.home-assistant.io/getting-started/).
 
 Once Home Assitant setup, you need to create an ESPHome instance:
@@ -258,12 +274,12 @@ However, if not detected, you can manually setup a static IP
 You're all set, you can now configure the dashboard as you like.
 See yaml widget files in esphome folder for widget examples.
 
-### Design choices
+## Design choices
 
 Most of the component choices were based on the original project.
 But I made some changes/improvements.
 
-##### Resistors
+### Resistors
 R1, R3 and R4 are just pulldown resistors, so I chose 100kΩ.
 
 R2 is to limit the current drawn by the MOSFET through the GPIO pins.
@@ -272,7 +288,7 @@ Lolin D32 max current per GPIO: 12mA
 So R2 should at least be 275Ω, I chose R2 330Ω. 
 
 
-##### Pins used
+### Pins used
 | GPIO | Function |
 | --- | --- |
 | 5  | Built-in LED |
@@ -290,9 +306,9 @@ So R2 should at least be 275Ω, I chose R2 330Ω.
 I avoided the use of strapping pins, on ESP32 they are: 0, 2, 4, 12, 15
 
 
-### Some Fusion 360 PCB tips
+## Some Fusion 360 PCB tips
 
-##### To edit a single component footprint:
+### To edit a single component footprint:
 
 - Go on Schematics
 - Find component in "Place component" left panel > right click > Edit library
@@ -304,17 +320,21 @@ I avoided the use of strapping pins, on ESP32 they are: 0, 2, 4, 12, 15
 
 This should update the footprint in the PCB editor
 
-##### To check errors before export:
+### To check errors before export:
 
 - In schematics > Validate > Errors > Check everything OK then sync
 - In PCB editor > Rules DRC/ERC > DRC > Check everything OK
 
-##### To export PCB manufacturing files:
+### To export PCB manufacturing files:
 
 - In PCB editor > Manufacturing > CAM processor > CAM
 - In output files tab > Gerber > Profile > Add layer > 46 milling
 - Process job
 - Send files in "DrillFiles" and "GerberFiles" to manufacturer
+
+
+
+
 
 
 
