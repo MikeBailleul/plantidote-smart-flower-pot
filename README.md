@@ -276,19 +276,24 @@ However, if not detected, you can manually setup a static IP
 You're all set, you can now configure the dashboard as you like.
 See yaml widget files in esphome folder for widget examples.
 
-## Design choices
+## PCB design choices
 
 Most of the component choices were based on the original project.
 But I made some changes/improvements.
 
-### Resistors
+- I changed the value of the resistor R2 for the MOSFET because according to my calculations, it was not enough. I had the same issues, sometimes triggering, sometimes not, very random. 
+- I changed the pin used for the button, it was a strapping pin (pin 0) and it caused me a lot of issues while developing the code so I changed it to another one (pin 13).
+- I freed one pin and removed one resistor for reading the battery voltage because I discovered that the LolinD32 has a built-in feature for that
+- I connected all LolinD32 pins to the board, this way, we can use other pins to add features if the project evolves more. Because of that I had to make the cutout a bit of a weird rectangular shape.
+- I removed one pin for the water level, because I felt I didn't need that many
+
+### Resistors calculations
 R1, R3 and R4 are just pulldown resistors, so I chose 100kΩ.
 
 R2 is to limit the current drawn by the MOSFET through the GPIO pins.
 Lolin D32 max current per GPIO: 12mA
 ```R = U/Imax = 3.3/0.012 = 275Ω```
 So R2 should at least be 275Ω, I chose R2 330Ω. 
-
 
 ### Pins used
 | GPIO | Function |
@@ -298,9 +303,9 @@ So R2 should at least be 275Ω, I chose R2 330Ω.
 | 19 | Power soil moisture sensor |
 | 17 | Power pump |
 | 27 | Power water level sensor 100% |
-| 26 | Power water level sensor 75% |
-| 25 | Power water level sensor 50% |
-| 33 | Power water level sensor 25% |
+| 26 | Power water level sensor 70% |
+| 25 | Power water level sensor 30% |
+| 33 | Power water level sensor 10% |
 | 32 | Water level sensor signal |
 | 34 | Soil moisture sensor signal |
 | 35 | Battery voltage |
