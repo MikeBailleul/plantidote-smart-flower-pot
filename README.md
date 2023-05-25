@@ -16,7 +16,7 @@ Plantidote will automatically check for moisture level in the planter and will w
   * [Soldering](#soldering)
   * [Assembling the bottom part](#assembling-the-bottom-part)
   * [Assembling the top part](#assembling-the-top-part)
-- [Home Assistant & ESPHome Instructions](#home-assistant-esphome-instructions)
+- [Home Assistant & ESPHome Instructions](#home-assistant--esphome-instructions)
 - [PCB design choices](#pcb-design-choices)
 - [Some Fusion 360 PCB tips](#some-fusion-360-pcb-tips)
 
