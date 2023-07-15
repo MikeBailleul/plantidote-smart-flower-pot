@@ -17,6 +17,7 @@
 #define WAKEUP_LEVEL  HIGH  // Trigger wakeup when button is HIGH
 #define uS_TO_S_FACTOR 1000000LL  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP  86400 * uS_TO_S_FACTOR
+#define TIME_TO_SLEEP_FOREVER  31536000 * uS_TO_S_FACTOR
 
 // ------------------------ Pins ---------------------- //
 
@@ -39,6 +40,7 @@ const gpio_num_t PIN_WATER_SIGNAL = GPIO_NUM_32;
 const gpio_num_t PIN_BATTERY_LEVEL = GPIO_NUM_35;
 const float BATTERY_MIN_VOLTAGE = 3.3;
 const float BATTERY_MAX_VOLTAGE = 4.2;
+const float BATTERY_THRESHOLD = 3.4;
 
 const gpio_num_t PIN_BUILTIN_LED = GPIO_NUM_5;
 
@@ -101,6 +103,7 @@ BLYNK_WRITE(V5) {
 
     if (v5Value == 1) {
         waterPump.startPumping();
+        Blynk.virtualWrite(V6, 1); // log pump action
         pumpTimer.setTimeout(PUMP_DURATION, turnOffBlynkPumpSwitch);
     } else {
         waterPump.stopPumping();
@@ -125,20 +128,35 @@ void sendDataToBlynk() {
 
 // ------------------------ Deep sleep functions ---------------------- //
 
-void deepSleep() {
+void deepSleep(long long int timeToSleep) {
     esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BUTTON, WAKEUP_LEVEL);
-    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP);
+    esp_sleep_enable_timer_wakeup(timeToSleep);
     esp_deep_sleep_start();
 }
 
 
 void hibernate() {
+    Serial.println("--- ZZZZZzzzzz ---");
+
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
-    
-    Serial.println("--- ZZZZZzzzzz ---");
-    deepSleep();
+    deepSleep(TIME_TO_SLEEP);
+}
+
+void sleepForeverIfNeeded() {
+    if (battery.getBatteryVoltage() <= BATTERY_THRESHOLD) {
+        Blynk.virtualWrite(V7, 0);
+        Serial.println("--- Sleep forever because battery is lower than safety threshold ---");
+
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+        esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
+
+        deepSleep(TIME_TO_SLEEP_FOREVER);
+    } else {
+        Serial.println("--- Battery health OK: " + String(battery.getBatteryVoltage()) + "V ---");
+    }
 }
 
 void prepareForHibernation() {
@@ -178,8 +196,13 @@ bool isMeasuringCompleted() {
 }
 
 void waterPlantIfNeeded() {
-    if (waterLevel.getWaterPercentage() > 0 && moisture.getMoisturePercentage() > moistureThreshold) {
+    Serial.println("--- Moisture " + String(moisture.getMoisturePercentage()) + "% --- threshold: " + moistureThreshold + "% ---");
+    if (waterLevel.getWaterPercentage() > 0 && moisture.getMoisturePercentage() < moistureThreshold) {
+        Serial.println("--- Watering thirsty plant --");
         waterPump.startPumping();
+        Blynk.virtualWrite(V6, 1); // log pump action
+    } else {
+        Serial.println("--- No need to water plant --");
     }
 }
 
@@ -188,6 +211,7 @@ void waterPlantIfNeeded() {
 bool needToStartMeasure = true;
 bool needToSendDataBlynk = true;
 bool needToCheckWatering = true;
+bool needToCheckBatteryHealth = true;
 
 void setup() {
     Serial.begin(115200);
@@ -216,16 +240,22 @@ void loop() {
     }
 
     if (isMeasuringCompleted()) {
-        if (needToSendDataBlynk) {
-            needToSendDataBlynk = false;
-            sendDataToBlynk();
-            prepareForHibernation();
+        if (needToCheckBatteryHealth) {
+            needToCheckBatteryHealth = false;
+            sleepForeverIfNeeded();
         }
 
         if (needToCheckWatering) {
             needToCheckWatering = false;
             waterPlantIfNeeded();
         }
+        
+
+        if (needToSendDataBlynk) {
+            needToSendDataBlynk = false;
+            sendDataToBlynk();
+            prepareForHibernation();
+        }   
     }
 
     // if (button.held(50)) { // emergency stop
