@@ -59,7 +59,7 @@ class WaterLevel {
 
         void loopRoutine();
         void startMesure();
-        WaterReading getWaterReading();
+        WaterReading getWaterPercentage();
 };
 
 #endif

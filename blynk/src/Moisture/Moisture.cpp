@@ -6,7 +6,7 @@ const uint8_t MEASURE_COUNT = 10; // number of measures to do before averaging
 
 void Moisture::goToNextState() {
     state = (state + 1) % IDLE;
-    Serial.println("Go to next moisture state: " + String(state));
+    // Serial.println("Go to next moisture state: " + String(state));
 }
 
 void Moisture::initState() {

@@ -169,6 +169,6 @@ void WaterLevel::startMesure() {
     }
 }
 
-WaterReading WaterLevel::getWaterReading() {
+WaterReading WaterLevel::getWaterPercentage() {
     return waterReading;
 }

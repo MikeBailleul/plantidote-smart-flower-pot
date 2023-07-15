@@ -23,6 +23,7 @@ class Battery {
         unsigned long previousMeasureTime = 0;
         uint8_t readingCounter = 0;
         float readingAverage = 0;
+        float batteryVoltage = 0.0;
         int8_t batteryPercentage = -1;
         
         // ---- state change methods ---- //
@@ -42,6 +43,7 @@ class Battery {
 
         void loopRoutine();
         void startMeasure();
+        float getBatteryVoltage();
         int8_t getBatteryPercentage();
 };
 

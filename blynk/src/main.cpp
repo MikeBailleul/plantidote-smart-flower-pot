@@ -4,6 +4,12 @@
 #include <Moisture/Moisture.h>
 #include <WaterPump/WaterPump.h>
 #include <WaterLevel/WaterLevel.h>
+#include <myconfig.h>
+
+// ------------------------ Blynk import ------------------------ //
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
 
 // ------------------------ Pins ---------------------- //
 
@@ -43,6 +49,33 @@ struct Timer {
 };
 Timer timer;
 
+// ------------------------ Declarations ---------------------- //
+
+BlynkTimer blynkTimer;
+Button button(PIN_BUTTON);
+WaterPump waterPump(PIN_PUMP_POWER, PUMP_DURATION);
+Moisture moisture(PIN_MOISTURE_POWER, PIN_MOISTURE_SIGNAL, MEASURE_WAITING_TIME, MOISTURE_CALIBRATION_WATER, MOISTURE_CALIBRATION_AIR);
+Battery battery(PIN_BATTERY_LEVEL, MEASURE_WAITING_TIME, BATTERY_MIN_VOLTAGE, BATTERY_MAX_VOLTAGE);
+WaterLevel waterLevel(PIN_WATER_SIGNAL, PIN_WATER_POWER_LEVEL_10, PIN_WATER_POWER_LEVEL_30, PIN_WATER_POWER_LEVEL_70, PIN_WATER_POWER_LEVEL_100, MEASURE_WAITING_TIME);
+
+// ------------------------ Blynk Config ---------------------- //
+
+char ssid[] = WIFI_SSID;
+char pass[] = WIFI_PASSWORD;
+
+// called every time the device is connected to Blynk.Cloud
+BLYNK_CONNECTED() {
+}
+
+void sendDataToBlynk() {
+    Blynk.virtualWrite(V0, battery.getBatteryVoltage());
+    Blynk.virtualWrite(V1, battery.getBatteryPercentage());
+    Blynk.virtualWrite(V2, moisture.getMoisturePercentage());
+    Blynk.virtualWrite(V3, waterLevel.getWaterPercentage());
+}
+
+// ------------------------ Methods ---------------------- //
+
 void waitForNextCycle() {
     uint32_t now;
     do { now = millis(); } while (now - timer.laptime < WAIT_PERIOD);
@@ -50,23 +83,21 @@ void waitForNextCycle() {
     timer.ticks++;
 }
 
-// ------------------------ Declarations ---------------------- //
-
-Button button(PIN_BUTTON);
-WaterPump waterPump(PIN_PUMP_POWER, PUMP_DURATION);
-Moisture moisture(PIN_MOISTURE_POWER, PIN_MOISTURE_SIGNAL, MEASURE_WAITING_TIME, MOISTURE_CALIBRATION_WATER, MOISTURE_CALIBRATION_AIR);
-Battery battery(PIN_BATTERY_LEVEL, MEASURE_WAITING_TIME, BATTERY_MIN_VOLTAGE, BATTERY_MAX_VOLTAGE);
-WaterLevel waterLevel(PIN_WATER_SIGNAL, PIN_WATER_POWER_LEVEL_10, PIN_WATER_POWER_LEVEL_30, PIN_WATER_POWER_LEVEL_70, PIN_WATER_POWER_LEVEL_100, MEASURE_WAITING_TIME);
-
-// ------------------------ Methods ---------------------- //
+// ------------------------ Core ---------------------- //
 
 void setup() {
     Serial.begin(115200);
 
     pinMode(PIN_BUILTIN_LED, OUTPUT);
+
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+    blynkTimer.setInterval(10000L, sendDataToBlynk);
 }
 
 void loop() {
+    Blynk.run();
+    blynkTimer.run();
+
     button.loopRoutine();
     battery.loopRoutine();
     moisture.loopRoutine();
@@ -74,11 +105,12 @@ void loop() {
     waterLevel.loopRoutine();
 
     if (button.pressed()) {
-        Serial.println("Pressed");
+        Serial.println("---------- Pressed ----------");
 
+        Serial.println("Battery voltage: "+ String(battery.getBatteryVoltage()));
         Serial.println("Battery percentage: "+ String(battery.getBatteryPercentage()));
-        Serial.println("Moisture: "+ String(moisture.getMoisturePercentage()));
-        Serial.println("Water level: "+ String(waterLevel.getWaterReading()));
+        Serial.println("Moisture level: "+ String(moisture.getMoisturePercentage()));
+        Serial.println("Water level: "+ String(waterLevel.getWaterPercentage()));
         
         battery.startMeasure();
         moisture.startMeasure();

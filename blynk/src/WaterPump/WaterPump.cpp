@@ -4,12 +4,12 @@
 
 void WaterPump::goToState(WaterPumpState newState) {
     state = newState % IDLE;
-    Serial.println("Force new pump state: " + String(state));
+    // Serial.println("Force new pump state: " + String(state));
 }
 
 void WaterPump::goToNextState() {
     state = (state + 1) % IDLE;
-    Serial.println("Go to next water pump state: " + String(state));
+    // Serial.println("Go to next water pump state: " + String(state));
 }
 
 void WaterPump::initState() {

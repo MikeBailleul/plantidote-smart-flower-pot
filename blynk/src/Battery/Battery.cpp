@@ -6,7 +6,7 @@ const uint8_t MEASURE_COUNT = 10; // number of measures to do before averaging
 
 void Battery::goToNextState() {
     state = (state + 1) % IDLE;
-    Serial.println("Go to next battery state: " + String(state));
+    // Serial.println("Go to next battery state: " + String(state));
 }
 
 void Battery::initState() {
@@ -30,7 +30,7 @@ void Battery::measureState() {
 }
 
 void Battery::computeState() {
-    readingAverage = readingAverage / MEASURE_COUNT;
+    batteryVoltage = readingAverage / MEASURE_COUNT;
 
     batteryPercentage = (readingAverage - minVoltage) / (maxVoltage - minVoltage) * 100;
     if (readingAverage > maxVoltage) {
@@ -89,6 +89,10 @@ void Battery::startMeasure() {
     } else {
         Serial.println("Battery not IDLE, already in state: " + String(state));
     }
+}
+
+float Battery::getBatteryVoltage() {
+    return batteryVoltage;
 }
 
 int8_t Battery::getBatteryPercentage() {
