@@ -32,8 +32,7 @@ void Battery::measureState() {
 void Battery::computeState() {
     readingAverage = readingAverage / MEASURE_COUNT;
 
-    // conversion from voltage to percentage by using a fitting function for the charge-voltage-curve of an LiPo battery
-    batteryPercentage = 2808.3808 * pow(readingAverage, 4) - 43560.9157 * pow(readingAverage, 3) + 252848.5888 * pow(readingAverage, 2) - 650767.4615 * readingAverage + 626532.9;
+    batteryPercentage = (readingAverage - minVoltage) / (maxVoltage - minVoltage) * 100;
     if (readingAverage > maxVoltage) {
         batteryPercentage = 100;
     } else if (readingAverage < minVoltage) {
