@@ -17,6 +17,7 @@ Plantidote will automatically check for moisture level in the planter and will w
   * [Assembling the bottom part](#assembling-the-bottom-part)
   * [Assembling the top part](#assembling-the-top-part)
 - [Home Assistant & ESPHome Instructions](#home-assistant--esphome-instructions)
+- [Blynk Instructions](#blynk-instructions)
 - [PCB design choices](#pcb-design-choices)
 - [Some Fusion 360 PCB tips](#some-fusion-360-pcb-tips)
 
@@ -28,7 +29,9 @@ Unfortunately, it was working only with Blynk and the pot was difficult to make 
 I completely redesigned the PCB and some parts of 3D models.
 It is now easier to seal, requiring only 2 seal points. Hot glue or silicone sealant can be used. Thanks to Martin Vinter for [the inspiration](https://github.com/MartinVinter/Flaura2)
 
-This new smart pot works with HomeAssistant/ESPHome, no need for Blynk. Home Assistant code is derived from MathGaming [modified version of Flaura](https://github.com/mathgaming/FlauraHomeAssistant).  Many thanks to him.
+This new smart pot works with:
+- HomeAssistant/ESPHome. Home Assistant code is derived from MathGaming [modified version of Flaura](https://github.com/mathgaming/FlauraHomeAssistant).  Many thanks to him.
+- [Blynk](https://blynk.cloud/)
 
 Plantidote has 4 design variations for the external shell and can be printed in different colors (shell & top lid).
 
@@ -221,7 +224,7 @@ It should not be hard to know what goes where since it is very well indicated on
 | ![](./images/instructions/assembling-top/1.jpg) | ![](./images/instructions/assembling-top/2.jpg) | ![](./images/instructions/assembling-top/3.jpg) | ![](./images/instructions/assembling-top/4.jpg) |
 
 <br />**5.** put the ring into the lid
-<br />**6.** use a sharp tool to create small watering holes
+<br />**6.** use a sharp tool to create small watering holes (8 to 12 worked for me)
 <br />**7.** place the lid onto the vase, it should easily fit in and out
 <br />**8.** cut 90mm from the the Ø5-Ø3mm hose and connect it to the bottom of the pot and the T-connector
 
@@ -275,6 +278,10 @@ However, if not detected, you can manually setup a static IP
 
 You're all set, you can now configure the dashboard as you like.
 See yaml widget files in esphome folder for widget examples.
+
+## Blynk Instructions
+
+[See here](https://github.com/MikeBailleul/plantidote-smart-flower-pot/tree/main/blynk)
 
 ## PCB design choices
 
