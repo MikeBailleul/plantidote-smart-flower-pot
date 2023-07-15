@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 enum WaterReading {
+    LEVEL_UNKNOWN = -1,
     LEVEL_EMPTY = 0,
     LEVEL_10 = 10,
     LEVEL_30 = 30,

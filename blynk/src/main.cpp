@@ -7,9 +7,16 @@
 #include <myconfig.h>
 
 // ------------------------ Blynk import ------------------------ //
+
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
+
+// ------------------------ Deep sleep config ---------------------- //
+
+#define WAKEUP_LEVEL  HIGH  // Trigger wakeup when button is HIGH
+#define uS_TO_S_FACTOR 1000000LL  // Conversion factor for micro seconds to seconds
+#define TIME_TO_SLEEP  86400 * uS_TO_S_FACTOR
 
 // ------------------------ Pins ---------------------- //
 
@@ -47,16 +54,18 @@ struct Timer {
     uint32_t laptime;
     uint32_t ticks;
 };
-Timer timer;
+Timer cycleTimer;
+BlynkTimer pumpTimer;
+BlynkTimer hibernationTimer;
 
 // ------------------------ Declarations ---------------------- //
-
-BlynkTimer blynkTimer;
 Button button(PIN_BUTTON);
 WaterPump waterPump(PIN_PUMP_POWER, PUMP_DURATION);
 Moisture moisture(PIN_MOISTURE_POWER, PIN_MOISTURE_SIGNAL, MEASURE_WAITING_TIME, MOISTURE_CALIBRATION_WATER, MOISTURE_CALIBRATION_AIR);
 Battery battery(PIN_BATTERY_LEVEL, MEASURE_WAITING_TIME, BATTERY_MIN_VOLTAGE, BATTERY_MAX_VOLTAGE);
 WaterLevel waterLevel(PIN_WATER_SIGNAL, PIN_WATER_POWER_LEVEL_10, PIN_WATER_POWER_LEVEL_30, PIN_WATER_POWER_LEVEL_70, PIN_WATER_POWER_LEVEL_100, MEASURE_WAITING_TIME);
+
+int8_t moistureThreshold = 50;
 
 // ------------------------ Blynk Config ---------------------- //
 
@@ -67,36 +76,133 @@ char pass[] = WIFI_PASSWORD;
 BLYNK_CONNECTED() {
 }
 
+// called every time the V4 state changes
+BLYNK_WRITE(V4) {
+    int v4Value = param.asInt();
+
+    if (v4Value < 0) {
+        moistureThreshold = 0;
+    } else if (v4Value > 100) {
+        moistureThreshold = 100;
+    } else {
+        moistureThreshold = v4Value;
+    }
+
+    Serial.println("V4 received, moisture threshold: " + String(moistureThreshold));
+}
+
+void turnOffBlynkPumpSwitch() {
+    Blynk.virtualWrite(V5, 0);
+}
+
+// called every time the V5 state changes
+BLYNK_WRITE(V5) {
+    int v5Value = param.asInt();
+
+    if (v5Value == 1) {
+        waterPump.startPumping();
+        pumpTimer.setTimeout(PUMP_DURATION, turnOffBlynkPumpSwitch);
+    } else {
+        waterPump.stopPumping();
+    }
+
+    Serial.println("V5 received, switch pumping ON/OFF: " + String(v5Value));
+}
+
 void sendDataToBlynk() {
+    Serial.println("Sending data to Blynk");
+
+    Serial.println("Battery voltage: "+ String(battery.getBatteryVoltage()));
+    Serial.println("Battery percentage: "+ String(battery.getBatteryPercentage()));
+    Serial.println("Moisture level: "+ String(moisture.getMoisturePercentage()));
+    Serial.println("Water level: "+ String(waterLevel.getWaterPercentage()));
+
     Blynk.virtualWrite(V0, battery.getBatteryVoltage());
     Blynk.virtualWrite(V1, battery.getBatteryPercentage());
     Blynk.virtualWrite(V2, moisture.getMoisturePercentage());
     Blynk.virtualWrite(V3, waterLevel.getWaterPercentage());
 }
 
+// ------------------------ Deep sleep functions ---------------------- //
+
+void deepSleep() {
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BUTTON, WAKEUP_LEVEL);
+    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP);
+    esp_deep_sleep_start();
+}
+
+
+void hibernate() {
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
+    
+    Serial.println("--- ZZZZZzzzzz ---");
+    deepSleep();
+}
+
+void prepareForHibernation() {
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+        // was woken up by user action
+        // maybe user wants to do something
+        // let's not go to sleep immediately
+        Serial.println("--- Going to sleep in 3 min ---");
+        hibernationTimer.setTimeout(180000L, hibernate);
+    } else {
+        Serial.println("--- Going to sleep in 10s ---");
+        hibernationTimer.setTimeout(10000L, hibernate);
+    }
+}
+
+
 // ------------------------ Methods ---------------------- //
 
 void waitForNextCycle() {
     uint32_t now;
-    do { now = millis(); } while (now - timer.laptime < WAIT_PERIOD);
-    timer.laptime = now;
-    timer.ticks++;
+    do { now = millis(); } while (now - cycleTimer.laptime < WAIT_PERIOD);
+    cycleTimer.laptime = now;
+    cycleTimer.ticks++;
+}
+
+void startMeasures() {
+    Serial.println("--- Measuring start ---");
+    battery.startMeasure();
+    moisture.startMeasure();
+    waterLevel.startMesure();
+}
+
+bool isMeasuringCompleted() {
+    return battery.getBatteryVoltage() != -1
+        && moisture.getMoisturePercentage() != -1
+        && waterLevel.getWaterPercentage() != -1;
+}
+
+void waterPlantIfNeeded() {
+    if (waterLevel.getWaterPercentage() > 0 && moisture.getMoisturePercentage() > moistureThreshold) {
+        waterPump.startPumping();
+    }
 }
 
 // ------------------------ Core ---------------------- //
+
+bool needToStartMeasure = true;
+bool needToSendDataBlynk = true;
+bool needToCheckWatering = true;
 
 void setup() {
     Serial.begin(115200);
 
     pinMode(PIN_BUILTIN_LED, OUTPUT);
+    digitalWrite(PIN_BUILTIN_LED, LOW);
 
     Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-    blynkTimer.setInterval(10000L, sendDataToBlynk);
+    Blynk.syncVirtual(V4);
 }
 
 void loop() {
     Blynk.run();
-    blynkTimer.run();
+    hibernationTimer.run();
+    pumpTimer.run();
 
     button.loopRoutine();
     battery.loopRoutine();
@@ -104,27 +210,28 @@ void loop() {
     waterPump.loopRoutine();
     waterLevel.loopRoutine();
 
-    if (button.pressed()) {
-        Serial.println("---------- Pressed ----------");
-
-        Serial.println("Battery voltage: "+ String(battery.getBatteryVoltage()));
-        Serial.println("Battery percentage: "+ String(battery.getBatteryPercentage()));
-        Serial.println("Moisture level: "+ String(moisture.getMoisturePercentage()));
-        Serial.println("Water level: "+ String(waterLevel.getWaterPercentage()));
-        
-        battery.startMeasure();
-        moisture.startMeasure();
-        waterLevel.startMesure();
-
-        digitalWrite(PIN_BUILTIN_LED, !digitalRead(PIN_BUILTIN_LED));
-
-        // waterPump.startPumping();
+    if (needToStartMeasure) {
+        needToStartMeasure = false;
+        startMeasures();
     }
 
-    if (button.held(50)) {
-        Serial.println("Held > 50");
-        waterPump.stopPumping();
+    if (isMeasuringCompleted()) {
+        if (needToSendDataBlynk) {
+            needToSendDataBlynk = false;
+            sendDataToBlynk();
+            prepareForHibernation();
+        }
+
+        if (needToCheckWatering) {
+            needToCheckWatering = false;
+            waterPlantIfNeeded();
+        }
     }
+
+    // if (button.held(50)) { // emergency stop
+    //     Serial.println("Held > 50");
+    //     waterPump.stopPumping();
+    // }
     
     waitForNextCycle();
 }

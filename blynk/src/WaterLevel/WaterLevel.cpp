@@ -14,7 +14,7 @@ void WaterLevel::goToNextState() {
 
 void WaterLevel::initState() {
     previousMeasureTime = 0;
-    waterReading = LEVEL_EMPTY;
+    waterReading = LEVEL_UNKNOWN;
 
     goToNextState();
 }
@@ -82,6 +82,10 @@ void WaterLevel::measureLevelState(WaterReading waterLevel) {
             waterReading = waterLevel;  
             goToState(CLEANING);
         } else {
+            if (waterLevel == LEVEL_10) {
+                waterReading = LEVEL_EMPTY;  
+            }
+
             goToNextState();
         }
     }
