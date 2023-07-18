@@ -1,5 +1,7 @@
 #include "WaterLevel.h"
 
+const uint8_t MEASURE_COUNT = 10; // number of measures to do before averaging
+
 // -------------------------------- private methods -------------------------------- //
 
 void WaterLevel::goToState(WaterLevelState newState) {
@@ -15,6 +17,8 @@ void WaterLevel::goToNextState() {
 void WaterLevel::initState() {
     previousMeasureTime = 0;
     waterReading = LEVEL_UNKNOWN;
+    readingHighest = 0;
+    readingCounter = 0;
 
     goToNextState();
 }
@@ -76,16 +80,23 @@ void WaterLevel::enableLevelState(WaterReading waterLevel) {
 }
 
 void WaterLevel::measureLevelState(WaterReading waterLevel) {
-    if (millis() - previousMeasureTime >= measureWaitingTime) {
+    if (readingCounter < MEASURE_COUNT && millis() - previousMeasureTime >= measureWaitingTime) {
+        previousMeasureTime = millis();
+
         float voltage = analogRead(pinSignal) * (3.0 / 1023.0);
-        if (voltage > 0.1) {
+        readingHighest = max(voltage, readingHighest);
+        readingCounter++;
+    }
+
+    if (readingCounter == MEASURE_COUNT) {
+        readingCounter = 0;
+        if (readingHighest > 0.1) {
             waterReading = waterLevel;  
             goToState(CLEANING);
         } else {
             if (waterLevel == LEVEL_10) {
                 waterReading = LEVEL_EMPTY;  
             }
-
             goToNextState();
         }
     }

@@ -39,6 +39,8 @@ class WaterLevel {
         // ---- internal variables ---- //
         uint16_t state;
         unsigned long previousMeasureTime = 0;
+        uint8_t readingCounter = 0;
+        float readingHighest = 0;
         WaterReading waterReading = LEVEL_EMPTY;
         
         // ---- state change methods ---- //
