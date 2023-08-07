@@ -5,6 +5,7 @@
 #include <WaterPump/WaterPump.h>
 #include <WaterLevel/WaterLevel.h>
 #include <myconfig.h>
+#include <Preferences.h>
 
 // ------------------------ Blynk import ------------------------ //
 
@@ -12,12 +13,28 @@
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 
+
+// ------------------------ Bluetooth ------------------------ //
+
+#include "BluetoothSerial.h"
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to enable it
+#endif
+
+BluetoothSerial SerialBT;
+bool clientConnected = false; // Track if a client is connected
+
+#define CREDENTIAL_SEPARATOR "::" // SSID::PASSWORD
+
 // ------------------------ Deep sleep config ---------------------- //
 
 #define WAKEUP_LEVEL  HIGH  // Trigger wakeup when button is HIGH
 #define uS_TO_S_FACTOR 1000000LL  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP  86400 * uS_TO_S_FACTOR
 #define TIME_TO_SLEEP_FOREVER  31536000 * uS_TO_S_FACTOR
+
+Preferences preferences;
 
 // ------------------------ Pins ---------------------- //
 
@@ -70,9 +87,6 @@ WaterLevel waterLevel(PIN_WATER_SIGNAL, PIN_WATER_POWER_LEVEL_10, PIN_WATER_POWE
 int8_t moistureThreshold = 50;
 
 // ------------------------ Blynk Config ---------------------- //
-
-char ssid[] = WIFI_SSID;
-char pass[] = WIFI_PASSWORD;
 
 // called every time the device is connected to Blynk.Cloud
 BLYNK_CONNECTED() {
@@ -172,6 +186,70 @@ void prepareForHibernation() {
     }
 }
 
+// ------------------------ Storage preferences functions ---------------------- //
+
+void clearWifiCredentials() {
+    preferences.begin("wifi", false); // Use the same namespace that you used for these preferences
+    preferences.remove("ssid");
+    preferences.remove("password");
+    preferences.end();
+}
+
+void saveCredentials(const String &ssid, const String &password) {
+    preferences.begin("wifi", false);
+    preferences.putString("ssid", ssid);
+    preferences.putString("password", password);
+    preferences.end();
+}
+
+void loadCredentials(char* ssid, char* password) {
+    preferences.begin("wifi", false);
+    String ssidStr = preferences.getString("ssid", WIFI_SSID); // load from config if empty
+    String passwordStr = preferences.getString("password", WIFI_PASSWORD); // load from config if empty
+    preferences.end();
+
+    // load the strings into the char*
+    ssidStr.toCharArray(ssid, ssidStr.length() + 1);
+    passwordStr.toCharArray(password, passwordStr.length() + 1);
+}
+
+// ------------------------ Bluetooth functions ---------------------- //
+
+void handleBTWelcomeMessage() {
+    SerialBT.println("Hello " + String(USERNAME) + "!");
+    SerialBT.println("Enter your Wifi credentials separated by ::");
+    SerialBT.println("MyWifi::MyWonderfulPassword");
+}
+
+void handleBTWifiCredentials(String receivedData) {
+    int separatorIndex = receivedData.indexOf(CREDENTIAL_SEPARATOR);
+    String ssid = receivedData.substring(0, separatorIndex);
+    String password = receivedData.substring(separatorIndex + strlen(CREDENTIAL_SEPARATOR));
+
+    saveCredentials(ssid, password);
+
+    SerialBT.println("Connecting to " + ssid + " with password: " + password);
+    SerialBT.println("Check Blynk app");
+
+    WiFi.begin(ssid, password);
+    // ESP.restart();
+}
+
+void listenForBluetoothInteractions() {
+    if (SerialBT.hasClient()) {
+        String receivedData = SerialBT.readStringUntil('\n');
+        receivedData.trim(); 
+
+        if (!clientConnected || receivedData.equalsIgnoreCase("hello") || receivedData.equalsIgnoreCase("hi")) {
+            handleBTWelcomeMessage();
+            clientConnected = true;
+        } else if (receivedData.indexOf(CREDENTIAL_SEPARATOR) != -1) {
+            handleBTWifiCredentials(receivedData);
+        }
+    } else {
+        clientConnected = false;
+    }
+}
 
 // ------------------------ Methods ---------------------- //
 
@@ -213,27 +291,7 @@ bool needToSendDataBlynk = true;
 bool needToCheckWatering = true;
 bool needToCheckBatteryHealth = true;
 
-void setup() {
-    Serial.begin(115200);
-
-    pinMode(PIN_BUILTIN_LED, OUTPUT);
-    digitalWrite(PIN_BUILTIN_LED, LOW);
-
-    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-    Blynk.syncVirtual(V4);
-}
-
-void loop() {
-    Blynk.run();
-    hibernationTimer.run();
-    pumpTimer.run();
-
-    button.loopRoutine();
-    battery.loopRoutine();
-    moisture.loopRoutine();
-    waterPump.loopRoutine();
-    waterLevel.loopRoutine();
-
+void startTasks() {
     if (needToStartMeasure) {
         needToStartMeasure = false;
         startMeasures();
@@ -257,11 +315,49 @@ void loop() {
             prepareForHibernation();
         }   
     }
+}
 
-    // if (button.held(50)) { // emergency stop
-    //     Serial.println("Held > 50");
-    //     waterPump.stopPumping();
-    // }
-    
+void setup() {
+    Serial.begin(115200);
+
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+        // need to be woken by user action to enable bluetooth configuration
+        SerialBT.begin("Plantidote");
+    }
+
+    pinMode(PIN_BUILTIN_LED, OUTPUT);
+    digitalWrite(PIN_BUILTIN_LED, LOW);
+
+    char ssid[32];
+    char password[32];
+
+    loadCredentials(ssid, password);
+
+    WiFi.begin(ssid, password);
+    Blynk.config(BLYNK_AUTH_TOKEN); // Configure Blynk to use WiFi, but don't connect yet
+    Blynk.syncVirtual(V4);
+}
+
+void loop() {
+    if (WiFi.status() == WL_CONNECTED) {
+        // Only try to connect Blynk if WiFi is connected
+        if (!Blynk.connected()) {
+            Blynk.connect();
+        }
+    }
+
+    Blynk.run();
+    pumpTimer.run();
+    hibernationTimer.run();
+
+    button.loopRoutine();
+    battery.loopRoutine();
+    moisture.loopRoutine();
+    waterPump.loopRoutine();
+    waterLevel.loopRoutine();
+
+    startTasks();
+    listenForBluetoothInteractions();
+
     waitForNextCycle();
 }

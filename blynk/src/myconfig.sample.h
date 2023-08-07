@@ -2,3 +2,4 @@
 #define WIFI_PASSWORD "xxxx"
 #define BLYNK_TEMPLATE_ID "xxxx"
 #define BLYNK_AUTH_TOKEN  "xxxx"
+#define USERNAME  "xxxx"
