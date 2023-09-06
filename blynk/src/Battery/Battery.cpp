@@ -32,10 +32,10 @@ void Battery::measureState() {
 void Battery::computeState() {
     batteryVoltage = readingAverage / MEASURE_COUNT;
 
-    batteryPercentage = (readingAverage - minVoltage) / (maxVoltage - minVoltage) * 100;
-    if (readingAverage > maxVoltage) {
+    batteryPercentage = (batteryVoltage - minVoltage) / (maxVoltage - minVoltage) * 100;
+    if (batteryVoltage > maxVoltage) {
         batteryPercentage = 100;
-    } else if (readingAverage < minVoltage) {
+    } else if (batteryVoltage < minVoltage) {
         batteryPercentage = 0;
     }
 

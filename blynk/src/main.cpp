@@ -178,8 +178,8 @@ void prepareForHibernation() {
         // was woken up by user action
         // maybe user wants to do something
         // let's not go to sleep immediately
-        Serial.println("--- Going to sleep in 3 min ---");
-        hibernationTimer.setTimeout(180000L, hibernate);
+        Serial.println("--- Going to sleep in 1 min ---");
+        hibernationTimer.setTimeout(60000L, hibernate);
     } else {
         Serial.println("--- Going to sleep in 10s ---");
         hibernationTimer.setTimeout(10000L, hibernate);
